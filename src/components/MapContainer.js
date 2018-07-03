@@ -9,10 +9,10 @@ export class MapContainer extends React.Component {
       if (!this.props.loaded) {
         return <LoadingPage />
       }
-
       return (
         <div className="map-container">
-            <Map google={this.props.google} />
+            <Map google={this.props.google}>
+            </Map>
         </div>
       )
     }
