@@ -1,8 +1,9 @@
 import React from 'react';
+import MapContainer from './MapContainer';
 
 const DashboardPage = () => (
   <div>
-    Dashboard page content
+    <MapContainer />
   </div>
 );
 
