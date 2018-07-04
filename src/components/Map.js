@@ -2,14 +2,18 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 
 class Map extends React.Component {
+  state = {
+      infowindow: new google.maps.InfoWindow({})
+  }
+
   componentDidUpdate(prevProps, prevState) {
-        if (prevProps.google !== this.props.google) {
-          this.loadMap();
-        }
+    if (prevProps.google !== this.props.google) {
+      this.loadMap();
+    }
   }
 
   componentDidMount() {
-        this.loadMap();
+    this.loadMap();
   }
 
   loadMap() {
@@ -42,13 +46,32 @@ class Map extends React.Component {
       });
 
       this.map.addListener('click', (e) => {
+        this.state.infowindow.close();
         this.showPopupOnMap(e.latLng);
       })
+
+
+
+      const latlng =  new google.maps.LatLng(59.311309560216216, 18.06518750637474);
+      const  pos = {lat: 59.311309560216216, lng: 18.06518750637474};
+      
+
     }
 }
 
 showPopupOnMap = (latLng) => {
-  console.log(latLng.lat(), latLng.lng());
+  const contentString = '<div id="content">'+
+  '<div id="siteNotice">'+
+  '</div>'+
+  '<p>I am here ma man</p>'+
+  '</div>'+
+  '</div>';
+  const pos = { lat: latLng.lat(), lng: latLng.lng() };
+  this.state.infowindow = new google.maps.InfoWindow({
+    content: contentString,
+    position: pos
+  });
+  this.state.infowindow.open(this.map)
 }
 
 render() {
