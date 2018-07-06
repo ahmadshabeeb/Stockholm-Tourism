@@ -1,22 +1,28 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import PopUpForm from './PopUpForm';
+import ReactDOMServer from 'react-dom/server'
 
 class Map extends React.Component {
+  
   state = {
-      infowindow: new google.maps.InfoWindow({})
+      infowindow: new google.maps.InfoWindow({}),
   }
 
   componentDidUpdate(prevProps, prevState) {
+    console.log('componentDidUpdate');
     if (prevProps.google !== this.props.google) {
       this.loadMap();
     }
   }
 
   componentDidMount() {
+    console.log('componentDidMount');
     this.loadMap();
   }
 
   loadMap() {
+    console.log('loadMap');
     if (this.props && this.props.google) {
       // google is available
       const {google} = this.props;
@@ -25,9 +31,8 @@ class Map extends React.Component {
       const mapRef = this.refs.map;
       const node = ReactDOM.findDOMNode(mapRef);
 
-      const zoom = this.props.zoom;
-      const lat = this.props.initialCenter.lat;
-      const lng = this.props.initialCenter.lng;
+      const {initialCenter, zoom} = this.props;
+      const {lat, lng} = initialCenter;
       const center = new maps.LatLng(lat, lng);
       const mapConfig = Object.assign({}, {
         center,
@@ -35,38 +40,24 @@ class Map extends React.Component {
       })
       this.map = new maps.Map(node, mapConfig);
 
-      const marker1 = new google.maps.Marker({
-        position: {lat: 59.329113196988345 , lng: 17.966015144369067},
-        map: this.map
-      });
-
-      const marker2 = new google.maps.Marker({
-        position: {lat: 59.3407209390951 , lng: 18.18093518831438},
-        map: this.map
-      });
-
       this.map.addListener('click', (e) => {
         this.state.infowindow.close();
-        this.showPopupOnMap(e.latLng);
+        const popUp = <PopUpForm />;
+        this.showPopupOnMap(e.latLng, popUp);
+        google.maps.event.addListener(this.state.infowindow, 'domready', () => {
+           // the form
+        });
       })
-
-
-
-      const latlng =  new google.maps.LatLng(59.311309560216216, 18.06518750637474);
-      const  pos = {lat: 59.311309560216216, lng: 18.06518750637474};
-      
-
-    }
+      this.forceUpdate();
+    } 
+    
 }
 
-showPopupOnMap = (latLng) => {
-  const contentString = '<div id="content">'+
-  '<div id="siteNotice">'+
-  '</div>'+
-  '<p>I am here ma man</p>'+
-  '</div>'+
-  '</div>';
+showPopupOnMap = (latLng, popUp) => {
+  const contentString = ReactDOMServer.renderToString(popUp)
+
   const pos = { lat: latLng.lat(), lng: latLng.lng() };
+
   this.state.infowindow = new google.maps.InfoWindow({
     content: contentString,
     position: pos
@@ -74,7 +65,20 @@ showPopupOnMap = (latLng) => {
   this.state.infowindow.open(this.map)
 }
 
+renderChildren() {
+  console.log('renderChildren');
+  const {children} = this.props;
+  if (!children) return;
+  return React.Children.map(children, c => {
+    return React.cloneElement(c, {
+      map: this.map,
+      google: this.props.google,
+    });
+  })
+}
+
 render() {
+  console.log('render');
     const style = {
       width: '70vw',
       height: '70vh'
@@ -83,6 +87,7 @@ render() {
     return (
       <div  ref="map" style={style}>
         loading map...
+        {this.renderChildren()}
       </div>
     )
   }
