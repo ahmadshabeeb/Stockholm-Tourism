@@ -37,7 +37,7 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch) => (
-    { removePlace: (place) => dispatch(startRemovePlace(place)) }
+    { removePlace: ({ id }) => dispatch(startRemovePlace({ id })) }
   );
 
 export default connect(mapStateToProps, mapDispatchToProps)(PlacesList);

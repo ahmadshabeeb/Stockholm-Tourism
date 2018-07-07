@@ -10,6 +10,7 @@ class Map extends React.Component {
   state = {
       addLocationInfowindow: undefined,
       activeMarkerInfowindow: undefined,
+      markers: []
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -19,6 +20,7 @@ class Map extends React.Component {
     }
 
     if(prevProps.places !== this.props.places) {
+      console.log('props.places changed');
       this.renderMarkersOnMap();
     }
   }
@@ -47,6 +49,7 @@ class Map extends React.Component {
       this.props.setMap(this.map);
 
       this.renderMarkersOnMap();
+      
 
       // pop up add place
       this.map.addListener('click', (e) => {
@@ -70,26 +73,44 @@ class Map extends React.Component {
     }   
 }
 
+clearMarkers = () => {
+  console.log('clear markers');
+  if(this.state.markers) {
+    this.state.markers.map((marker) => {
+      marker.setMap(null);
+    })
+  }
+  this.setState({ markers: [] });
+}
+
 renderMarkersOnMap = () => {
-  this.props.places.map((place) => {
+  console.log(this.state.markers)
+  this.clearMarkers();
+  let markers = [];
+    this.props.places.map((place) => {
 
-    const marker = new google.maps.Marker({
-      position: place.position,
-      map: this.map,
-      title: place.title
-    });
+      const marker = new google.maps.Marker({
+        position: place.position,
+        map: this.map,
+        title: place.title
+      });
 
-    const markerInfowindow = new google.maps.InfoWindow({
-      content: `<h5>${place.title}</h5>`
-    });
-    marker.addListener('click', () => {
-      this.closeOpenedInfoWindow();
-      this.setState({
-        activeMarkerInfowindow: markerInfowindow
-      })
-      markerInfowindow.open(this.map, marker);
-    });
+      markers.push(marker);
+
+      const markerInfowindow = new google.maps.InfoWindow({
+        content: `<h5>${place.title}</h5>`
+      });
+
+      marker.addListener('click', () => {
+        this.closeOpenedInfoWindow();
+        this.setState({
+          activeMarkerInfowindow: markerInfowindow
+        })
+        markerInfowindow.open(this.map, marker);
+      });
   });
+
+  this.setState({ markers });
 }
 
 closeOpenedInfoWindow = () => {
