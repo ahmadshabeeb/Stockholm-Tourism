@@ -4,25 +4,23 @@ import PopUpForm from './PopUpForm';
 import ReactDOMServer from 'react-dom/server'
 
 class Map extends React.Component {
-  
   state = {
       infowindow: new google.maps.InfoWindow({}),
+      showingInfoWindow: false,
+      activeMarker: {},
   }
 
   componentDidUpdate(prevProps, prevState) {
-    console.log('componentDidUpdate');
     if (prevProps.google !== this.props.google) {
       this.loadMap();
     }
   }
 
   componentDidMount() {
-    console.log('componentDidMount');
     this.loadMap();
   }
 
   loadMap() {
-    console.log('loadMap');
     if (this.props && this.props.google) {
       // google is available
       const {google} = this.props;
@@ -40,12 +38,31 @@ class Map extends React.Component {
       })
       this.map = new maps.Map(node, mapConfig);
 
+      // adding markers for corresponding saved places
+      const pos = {lat: 59.329113196988345 , lng: 17.966015144369067};
+      const marker = new google.maps.Marker({
+        position: pos,
+        map: this.map,
+        title: 'first marker',
+      });
+      const infowindow = new google.maps.InfoWindow({
+        content: `<h3>${marker.title}</h3>`
+      });
+      marker.addListener('click', () => {
+        infowindow.open(this.map, marker);
+      });
+
+      // pop up add place
       this.map.addListener('click', (e) => {
         this.state.infowindow.close();
-        const popUp = <PopUpForm />;
+        const popUp = <PopUpForm onSubmit={this.onSubmit}/>;
         this.showPopupOnMap(e.latLng, popUp);
         google.maps.event.addListener(this.state.infowindow, 'domready', () => {
-           // the form
+          const formNode = ReactDOM.findDOMNode(this.refs.popUp);
+          document.getElementById('popUp').addEventListener('submit', (e) => {
+            e.preventDefault();
+            console.log(e.target.elements.location.value);
+          })
         });
       })
       this.forceUpdate();
@@ -65,20 +82,7 @@ showPopupOnMap = (latLng, popUp) => {
   this.state.infowindow.open(this.map)
 }
 
-renderChildren() {
-  console.log('renderChildren');
-  const {children} = this.props;
-  if (!children) return;
-  return React.Children.map(children, c => {
-    return React.cloneElement(c, {
-      map: this.map,
-      google: this.props.google,
-    });
-  })
-}
-
 render() {
-  console.log('render');
     const style = {
       width: '70vw',
       height: '70vh'
@@ -87,7 +91,6 @@ render() {
     return (
       <div  ref="map" style={style}>
         loading map...
-        {this.renderChildren()}
       </div>
     )
   }
