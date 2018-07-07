@@ -2,32 +2,23 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import PopUpForm from './PopUpForm';
 import ReactDOMServer from 'react-dom/server'
+import { connect } from 'react-redux';
+import { startAddPlace } from '../actions/places';
 
 class Map extends React.Component {
   state = {
       addLocationInfowindow: undefined,
-      showingMarkerInfoWindow: false,
       activeMarkerInfowindow: undefined,
-      places: [
-        {
-          position: {lat: 59.329113196988345 , lng: 17.966015144369067 },
-          title: 'first marker'
-        },
-        {
-          position: {lat: 59.33564057873766 , lng: 18.086178108236254 },
-          title: 'second marker'
-        },
-        {
-          position: {lat: 59.311468551709524 , lng: 18.069698616048754 },
-          title: 'third marker'
-        }
-      ]
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if ((prevProps.google !== this.props.google) || (prevState.places !== this.state.places) ) {
+    if (prevProps.google !== this.props.google){
       console.log('componentDidUpdate');
       this.loadMap();
+    }
+
+    if(prevProps.places !== this.props.places) {
+      this.renderMarkersOnMap();
     }
   }
 
@@ -61,14 +52,14 @@ class Map extends React.Component {
         const popUp = <PopUpForm onSubmit={this.onSubmit}/>;
         const position = { lat: e.latLng.lat(), lng: e.latLng.lng() };
         this.showPopupOnMap(position, popUp);
+
         google.maps.event.addListener(this.state.addLocationInfowindow, 'domready', () => {
           document.getElementById('popUp').addEventListener('submit', (e) => {
             e.preventDefault();
-            this.state.places.push({
+            this.props.startAddPlace({
               position,
               title: e.target.elements.location.value
             });
-            console.log(this.state.places);
             this.closeOpenedInfoWindow();
             this.renderMarkersOnMap();
           })
@@ -78,7 +69,7 @@ class Map extends React.Component {
 }
 
 renderMarkersOnMap = () => {
-  this.state.places.map((place) => {
+  this.props.places.map((place) => {
 
     const marker = new google.maps.Marker({
       position: place.position,
@@ -143,4 +134,15 @@ Map.defaultProps = {
   }
 }
 
-export default Map;
+const mapStateToProps = (state) => {
+  return {
+      places: state.places
+  };
+};
+
+const mapDispatchToProps = (dispatch) => (
+  { startAddPlace: (place) => dispatch(startAddPlace(place)
+)
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Map);
