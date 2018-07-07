@@ -5,13 +5,28 @@ import ReactDOMServer from 'react-dom/server'
 
 class Map extends React.Component {
   state = {
-      infowindow: new google.maps.InfoWindow({}),
-      showingInfoWindow: false,
-      activeMarker: {},
+      addLocationInfowindow: undefined,
+      showingMarkerInfoWindow: false,
+      activeMarkerInfowindow: undefined,
+      places: [
+        {
+          position: {lat: 59.329113196988345 , lng: 17.966015144369067 },
+          title: 'first marker'
+        },
+        {
+          position: {lat: 59.33564057873766 , lng: 18.086178108236254 },
+          title: 'second marker'
+        },
+        {
+          position: {lat: 59.311468551709524 , lng: 18.069698616048754 },
+          title: 'third marker'
+        }
+      ]
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.google !== this.props.google) {
+    if ((prevProps.google !== this.props.google) || (prevState.places !== this.state.places) ) {
+      console.log('componentDidUpdate');
       this.loadMap();
     }
   }
@@ -38,48 +53,72 @@ class Map extends React.Component {
       })
       this.map = new maps.Map(node, mapConfig);
 
-      // adding markers for corresponding saved places
-      const pos = {lat: 59.329113196988345 , lng: 17.966015144369067};
-      const marker = new google.maps.Marker({
-        position: pos,
-        map: this.map,
-        title: 'first marker',
-      });
-      const infowindow = new google.maps.InfoWindow({
-        content: `<h3>${marker.title}</h3>`
-      });
-      marker.addListener('click', () => {
-        infowindow.open(this.map, marker);
-      });
+      this.renderMarkersOnMap();
 
       // pop up add place
       this.map.addListener('click', (e) => {
-        this.state.infowindow.close();
+        this.closeOpenedInfoWindow();
         const popUp = <PopUpForm onSubmit={this.onSubmit}/>;
-        this.showPopupOnMap(e.latLng, popUp);
-        google.maps.event.addListener(this.state.infowindow, 'domready', () => {
-          const formNode = ReactDOM.findDOMNode(this.refs.popUp);
+        const position = { lat: e.latLng.lat(), lng: e.latLng.lng() };
+        this.showPopupOnMap(position, popUp);
+        google.maps.event.addListener(this.state.addLocationInfowindow, 'domready', () => {
           document.getElementById('popUp').addEventListener('submit', (e) => {
             e.preventDefault();
-            console.log(e.target.elements.location.value);
+            this.state.places.push({
+              position,
+              title: e.target.elements.location.value
+            });
+            console.log(this.state.places);
+            this.closeOpenedInfoWindow();
+            this.renderMarkersOnMap();
           })
         });
       })
-      this.forceUpdate();
-    } 
-    
+    }   
 }
 
-showPopupOnMap = (latLng, popUp) => {
-  const contentString = ReactDOMServer.renderToString(popUp)
+renderMarkersOnMap = () => {
+  this.state.places.map((place) => {
 
-  const pos = { lat: latLng.lat(), lng: latLng.lng() };
+    const marker = new google.maps.Marker({
+      position: place.position,
+      map: this.map,
+      title: place.title
+    });
 
-  this.state.infowindow = new google.maps.InfoWindow({
-    content: contentString,
-    position: pos
+    const markerInfowindow = new google.maps.InfoWindow({
+      content: `<h5>${place.title}</h5>`
+    });
+    marker.addListener('click', () => {
+      this.closeOpenedInfoWindow();
+      this.setState({
+        activeMarkerInfowindow: markerInfowindow
+      })
+      markerInfowindow.open(this.map, marker);
+      // this.map.setCenter(place.position);
+      // this.map.setZoom(13);
+    });
   });
-  this.state.infowindow.open(this.map)
+}
+
+closeOpenedInfoWindow = () => {
+  if(this.state.activeMarkerInfowindow){
+    this.state.activeMarkerInfowindow.close();
+  }
+  if(this.state.addLocationInfowindow){
+    this.state.addLocationInfowindow.close();
+  }
+}
+
+showPopupOnMap = (position, popUp) => {
+  const content = ReactDOMServer.renderToString(popUp)
+  this.setState({
+    addLocationInfowindow: new google.maps.InfoWindow({
+      content,
+      position
+    })
+  })
+  this.state.addLocationInfowindow.open(this.map)
 }
 
 render() {
