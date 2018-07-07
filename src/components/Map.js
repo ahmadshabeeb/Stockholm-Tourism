@@ -4,6 +4,7 @@ import PopUpForm from './PopUpForm';
 import ReactDOMServer from 'react-dom/server'
 import { connect } from 'react-redux';
 import { startAddPlace } from '../actions/places';
+import { setMap } from '../actions/map';
 
 class Map extends React.Component {
   state = {
@@ -43,6 +44,7 @@ class Map extends React.Component {
         zoom
       })
       this.map = new maps.Map(node, mapConfig);
+      this.props.setMap(this.map);
 
       this.renderMarkersOnMap();
 
@@ -86,8 +88,6 @@ renderMarkersOnMap = () => {
         activeMarkerInfowindow: markerInfowindow
       })
       markerInfowindow.open(this.map, marker);
-      // this.map.setCenter(place.position);
-      // this.map.setZoom(13);
     });
   });
 }
@@ -141,8 +141,9 @@ const mapStateToProps = (state) => {
 };
 
 const mapDispatchToProps = (dispatch) => (
-  { startAddPlace: (place) => dispatch(startAddPlace(place)
-)
-});
+  { startAddPlace: (place) => dispatch(startAddPlace(place)),
+    setMap: (map) => dispatch(setMap(map))
+  }
+);
 
 export default connect(mapStateToProps, mapDispatchToProps)(Map);
