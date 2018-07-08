@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PlaceListItem from './PlaceListItem';
 import { startRemovePlace } from '../actions/places';
+import selectPlaces from '../selectors/places';
 
 class PlacesList extends React.Component {
     render() {
@@ -31,7 +32,7 @@ class PlacesList extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        places: state.places,
+        places: selectPlaces(state.places, state.filters),
         map: state.map
     };
 }

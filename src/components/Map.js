@@ -5,6 +5,7 @@ import ReactDOMServer from 'react-dom/server'
 import { connect } from 'react-redux';
 import { startAddPlace } from '../actions/places';
 import { setMap } from '../actions/map';
+import selectPlaces from '../selectors/places';
 
 class Map extends React.Component {
   state = {
@@ -15,12 +16,10 @@ class Map extends React.Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.google !== this.props.google){
-      console.log('componentDidUpdate');
       this.loadMap();
     }
 
     if(prevProps.places !== this.props.places) {
-      console.log('props.places changed');
       this.renderMarkersOnMap();
     }
   }
@@ -74,7 +73,6 @@ class Map extends React.Component {
 }
 
 clearMarkers = () => {
-  console.log('clear markers');
   if(this.state.markers) {
     this.state.markers.map((marker) => {
       marker.setMap(null);
@@ -84,7 +82,6 @@ clearMarkers = () => {
 }
 
 renderMarkersOnMap = () => {
-  console.log(this.state.markers)
   this.clearMarkers();
   let markers = [];
     this.props.places.map((place) => {
@@ -157,7 +154,7 @@ Map.defaultProps = {
 
 const mapStateToProps = (state) => {
   return {
-      places: state.places
+      places: selectPlaces(state.places, state.filters)
   };
 };
 
