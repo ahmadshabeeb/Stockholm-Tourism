@@ -18,7 +18,7 @@ export const startAddPlace = (placeData = {}) => {
             dispatch(addPlace({
                 id: ref.key,
                 ...place
-            }))
+            }));
         });
     };
 };

@@ -12,7 +12,7 @@ class PlacesList extends React.Component {
             {
                 this.props.places.length === 0 ? (
                     <div>
-                        <span>No Places</span>
+                        <span>No Places Found</span>
                     </div>
                 ) : (
                         this.props.places.map ( (place) => 
@@ -20,7 +20,8 @@ class PlacesList extends React.Component {
                                 key={place.id} 
                                 place={place}
                                 setActivePlace={this.setActivePlace}
-                                removePlace={this.removePlace}/> )   
+                                removePlace={this.removePlace} />
+                            )   
                         )
                     )
             }

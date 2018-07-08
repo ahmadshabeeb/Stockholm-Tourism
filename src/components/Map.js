@@ -4,7 +4,6 @@ import PopUpForm from './PopUpForm';
 import ReactDOMServer from 'react-dom/server'
 import { connect } from 'react-redux';
 import { startAddPlace } from '../actions/places';
-import { setMap } from '../actions/activePlace';
 import selectPlaces from '../selectors/places';
 
 class Map extends React.Component {
@@ -36,53 +35,28 @@ class Map extends React.Component {
 
   loadMap() {
     if (this.props && this.props.google) {
-      // google is available
-      const {google} = this.props;
-      const maps = google.maps;
-
-      const mapRef = this.refs.map;
-      const node = ReactDOM.findDOMNode(mapRef);
-
-      const {initialCenter, zoom} = this.props;
-      const {lat, lng} = initialCenter;
-      const center = new maps.LatLng(lat, lng);
-      const mapConfig = Object.assign({}, {
-        center,
-        zoom
-      })
-      this.map = new maps.Map(node, mapConfig);
-
+      this.renderMap();
       this.renderMarkersOnMap();
-      
-      // pop up add place
-      this.map.addListener('click', (e) => {
-        this.closeOpenedInfoWindow();
-        const popUp = <PopUpForm onSubmit={this.onSubmit}/>;
-        const position = { lat: e.latLng.lat(), lng: e.latLng.lng() };
-        this.showPopupOnMap(position, popUp);
-
-        google.maps.event.addListener(this.state.addLocationInfowindow, 'domready', () => {
-          document.getElementById('popUp').addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.props.startAddPlace({
-              position,
-              title: e.target.elements.location.value
-            });
-            this.closeOpenedInfoWindow();
-            this.renderMarkersOnMap();
-          })
-        });
-      })
+      this.onMapClicked();
     }   
 }
 
-clearMarkers = () => {
-  if(this.state.markers) {
-    this.state.markers.map((marker) => {
-      marker.setMap(null);
-    })
-  }
-  this.setState({ markers: [] });
+renderMap = () => {
+  const {google} = this.props;
+  const maps = google.maps;
+
+  const mapRef = this.refs.map;
+  const node = ReactDOM.findDOMNode(mapRef);
+
+  const {initialCenter, zoom} = this.props;
+  const {lat, lng} = initialCenter;
+  const center = new maps.LatLng(lat, lng);
+
+  const mapConfig = Object.assign({}, {
+    center,
+    zoom
+  })
+  this.map = new maps.Map(node, mapConfig);
 }
 
 renderMarkersOnMap = () => {
@@ -98,9 +72,7 @@ renderMarkersOnMap = () => {
 
       markers.push(marker);
 
-      const markerInfowindow = new google.maps.InfoWindow({
-        content: `<h5>${place.title}</h5>`
-      });
+      const markerInfowindow = this.createMarkerInfoWindow(place.title);
 
       marker.addListener('click', () => {
         this.closeOpenedInfoWindow();
@@ -114,35 +86,43 @@ renderMarkersOnMap = () => {
   this.setState({ markers });
 }
 
+onMapClicked = () => {
+  this.map.addListener('click', (e) => {
+    this.closeOpenedInfoWindow();
+    const popUp = <PopUpForm />;
+    const position = { lat: e.latLng.lat(), lng: e.latLng.lng() };
+    this.showPopupOnMap(position, popUp);
+
+    google.maps.event.addListener(this.state.addLocationInfowindow, 'domready', () => {
+      document.getElementById('popUp').addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.props.startAddPlace({
+          position,
+          title: e.target.elements.location.value
+        });
+        this.closeOpenedInfoWindow();
+        this.renderMarkersOnMap();
+      })
+    });
+  })
+}
+
+clearMarkers = () => {
+  if(this.state.markers) {
+    this.state.markers.map((marker) => {
+      marker.setMap(null);
+    })
+  }
+  this.setState({ markers: [] });
+}
+
 closeOpenedInfoWindow = () => {
-  console.log(this)
   if(this.state.activeMarkerInfowindow){
     this.state.activeMarkerInfowindow.close();
   }
   if(this.state.addLocationInfowindow){
     this.state.addLocationInfowindow.close();
   }
-}
-
-showInfoWindowForActivePlace = (place) => {
-  const matchedMarkers = this.state.markers.filter((marker) => {
-    return (marker.position.lat() === place.position.lat) && (marker.position.lng() === place.position.lng) && (marker.title === place.title)
-  })
-  const activeMarker = matchedMarkers[0];
-  if(activeMarker) {
-    this.closeOpenedInfoWindow();
-    const markerInfowindow = new google.maps.InfoWindow({
-      content: `<h5>${activeMarker.title}</h5>`
-    });
-    console.log(activeMarker)
-    this.setState({ activeMarkerInfowindow: markerInfowindow });
-    markerInfowindow.open(this.map, activeMarker);
-  }
-}
-
-zoomInForActivePlace = (place) => {
-  this.map.setCenter(place.position);
-  this.map.setZoom(13);
 }
 
 showPopupOnMap = (position, popUp) => {
@@ -156,18 +136,38 @@ showPopupOnMap = (position, popUp) => {
   this.state.addLocationInfowindow.open(this.map)
 }
 
+zoomInForActivePlace = (place) => {
+  this.map.setCenter(place.position);
+  this.map.setZoom(13);
+}
+
+showInfoWindowForActivePlace = (place) => {
+  const matchedMarkers = this.state.markers.filter((marker) => {
+    return (marker.position.lat() === place.position.lat) && (marker.position.lng() === place.position.lng) && (marker.title === place.title)
+  })
+  const activeMarker = matchedMarkers[0];
+  if(activeMarker) {
+    this.closeOpenedInfoWindow();
+    const markerInfowindow = this.createMarkerInfoWindow(activeMarker.title);
+    this.setState({ activeMarkerInfowindow: markerInfowindow });
+    markerInfowindow.open(this.map, activeMarker);
+  }
+}
+
+createMarkerInfoWindow = (title) => {
+  return new google.maps.InfoWindow({
+    content: `<h5>${title}</h5>`
+  });
+}
+
 render() {
     const style = {
       width: '70vw',
       height: '70vh'
     }
-
     return (
-      <div>
-        <div  ref="map" style={style}>
-          loading map...
-        </div>
-        <button onClick={this.showInfoWindowForActivePlace} > active place</button>
+      <div  ref="map" style={style}>
+        loading map...
       </div>
     )
   }
