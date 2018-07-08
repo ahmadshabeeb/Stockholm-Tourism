@@ -2,7 +2,7 @@ import { createStore, combineReducers, applyMiddleware, compose } from 'redux';
 import thunk from 'redux-thunk';
 import authReducer from '../reducers/auth';
 import placesReducer from '../reducers/places';
-import mapReducer from '../reducers/map';
+import activePlaceReducer from '../reducers/activePlace';
 import filtersReducer from '../reducers/filters';
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
@@ -12,7 +12,7 @@ export default () => {
     combineReducers({
       auth: authReducer,
       places: placesReducer,
-      map: mapReducer,
+      activePlace: activePlaceReducer,
       filters: filtersReducer
     }),
     composeEnhancers(applyMiddleware(thunk))

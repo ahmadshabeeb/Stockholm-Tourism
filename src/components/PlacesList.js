@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PlaceListItem from './PlaceListItem';
 import { startRemovePlace } from '../actions/places';
+import { setActivePlace } from '../actions/activePlace';
 import selectPlaces from '../selectors/places';
 
 class PlacesList extends React.Component {
@@ -15,9 +16,11 @@ class PlacesList extends React.Component {
                     </div>
                 ) : (
                         this.props.places.map ( (place) => 
-                            ( <PlaceListItem key={place.id} {...place}
-                                    map={this.props.map}
-                                    removePlace={this.removePlace}/> )   
+                            ( <PlaceListItem 
+                                key={place.id} 
+                                place={place}
+                                setActivePlace={this.setActivePlace}
+                                removePlace={this.removePlace}/> )   
                         )
                     )
             }
@@ -28,17 +31,24 @@ class PlacesList extends React.Component {
     removePlace = (id) => {
         this.props.removePlace({ id })
     }
+    
+    setActivePlace = (place) => {
+        this.props.setActivePlace(place)
+    }
 };
 
 const mapStateToProps = (state) => {
     return {
         places: selectPlaces(state.places, state.filters),
-        map: state.map
+        activePlace: state.activePlace
     };
 }
 
 const mapDispatchToProps = (dispatch) => (
-    { removePlace: ({ id }) => dispatch(startRemovePlace({ id })) }
+    {
+        removePlace: ({ id }) => dispatch(startRemovePlace({ id })),
+        setActivePlace: (place) => dispatch(setActivePlace(place))
+    }
   );
 
 export default connect(mapStateToProps, mapDispatchToProps)(PlacesList);
