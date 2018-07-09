@@ -162,12 +162,14 @@ createMarkerInfoWindow = (title) => {
 
 render() {
     const style = {
-      width: '70vw',
-      height: '70vh'
+      width: '77.5vw',
+      height: '89vh'
     }
     return (
-      <div  ref="map" style={style}>
-        loading map...
+      <div className='map'>
+        <div  ref="map" style={style} >
+          loading map...
+        </div>
       </div>
     )
   }

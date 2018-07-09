@@ -1,14 +1,16 @@
 import React from 'react';
 import MapContainer from './MapContainer';
-import PlacesList from './PlacesList';
-import PlacesListFilters from './PlacesListFilters';
+import List from './List';
+
 
 const DashboardPage = () => (
-  <div>
-    <MapContainer />
-    <PlacesListFilters />
-    <PlacesList />
+  <div className='dashboard-container'>
+    <div className='dashboard-container__list'>
+      <List /> 
+    </div>
+    <div className='dashboard-container__map-container'>
+      <MapContainer />
+    </div>
   </div>
 );
-
 export default DashboardPage;

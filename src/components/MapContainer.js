@@ -16,9 +16,8 @@ export class MapContainer extends React.Component {
     if (!this.props.loaded) {
       return <LoadingPage />
     }
-
     return (
-      <div className="map-container">
+      <div >
           <Map google={this.props.google} />
       </div>
     )
