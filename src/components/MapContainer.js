@@ -17,7 +17,7 @@ export class MapContainer extends React.Component {
       return <LoadingPage />
     }
     return (
-      <div >
+      <div className='map-container'>
           <Map google={this.props.google} />
       </div>
     )

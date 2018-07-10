@@ -8,7 +8,7 @@ import selectPlaces from '../selectors/places';
 class PlacesList extends React.Component {
     render() {
         return(
-            <div>
+            <div className='list'>
             {
                 this.props.places.length === 0 ? (
                     <div>

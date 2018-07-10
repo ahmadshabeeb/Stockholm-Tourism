@@ -5,10 +5,10 @@ import PlacesListFilters from './PlacesListFilters';
 const List = () => {
     return (
         <div className='main'>
-            <p className='main__title'>My Places</p>
-            <PlacesListFilters className='main__filter'/>
-            <PlacesList className='main__list' />
-    </div>
+            <p className='list-header'>My Places</p>
+            <PlacesListFilters />
+            <PlacesList />
+        </div>
     );
 }
 
