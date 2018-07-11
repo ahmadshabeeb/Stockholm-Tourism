@@ -1,19 +1,42 @@
 .button {
   background: $blue;
-  border: none;
   color: white;
-  display: inline-block;
+  border: none;
+  border-radius: 5px;
+  padding: $m-size;
   font-size: $font-size-large;
   font-weight: 300;
-  line-height: 1;
-  padding: $s-size;
+  display: inline;
   text-decoration: none;
+  line-height: 1;
+  outline-width: 0;
 }
 
 .button--link {
   background: none;
 }
 
-.button--secondary {
-  background: #888;
+.button--remove {
+  width: 20%;
+  padding: 0;
+  background: none;
+  font-weight: 100;
+  color: $dark-blue;
+  font-size: $font-size-x-small;
+  &:hover {
+    color: $red;
+  }
 }
+
+.button--save {
+  font-weight: 300;
+  font-size: $font-size-small;
+  padding: $s-size;
+  align-content: center;
+  border-radius: 5px;
+  margin: auto;
+  width: 20%;
+}
+
+
+

@@ -1,0 +1,15 @@
+.marker-info-window-wrapper {
+    max-width: 35rem;
+    max-height: 35rem;
+    min-width: 8rem;
+    min-height: 8rem;
+}
+
+.marker-info-window {
+    width: 80%;
+    margin: auto;
+    text-align: center;
+    padding: $l-size $s-size $s-size $s-size;
+    font-size: $font-size-large;
+    font-weight: 800;
+}

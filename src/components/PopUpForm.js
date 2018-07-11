@@ -3,10 +3,12 @@ import React from 'react';
 class PopUpForm extends React.Component {
     render() {
         return (
-            <form id='popUp' className='map-form'>
-                <b>Add this location</b><br />
-                <input type='text' name='location' />
-                <button id='btn'>Add</button>
+            <form id='popUp' className='form'>
+                <input type='text' 
+                        name='location' 
+                        className='form__text-input'
+                        placeholder='Name'/>
+                <button id='btn' className='button button--save'>Save</button>
             </form>
         );
     }

@@ -5,6 +5,7 @@ import ReactDOMServer from 'react-dom/server'
 import { connect } from 'react-redux';
 import { startAddPlace } from '../actions/places';
 import selectPlaces from '../selectors/places';
+import MarkerInfoWindow from './MarkerInfoWindow';
 
 class Map extends React.Component {
   state = {
@@ -155,8 +156,9 @@ showInfoWindowForActivePlace = (place) => {
 }
 
 createMarkerInfoWindow = (title) => {
+  const content = ReactDOMServer.renderToString(<MarkerInfoWindow title={title} />)
   return new google.maps.InfoWindow({
-    content: `<h5>${title}</h5>`
+    content
   });
 }
 
@@ -166,11 +168,9 @@ render() {
       height: '89vh'
     }
     return (
-      <div className='map'>
         <div  ref="map" style={style} >
           loading map...
         </div>
-      </div>
     )
   }
 };

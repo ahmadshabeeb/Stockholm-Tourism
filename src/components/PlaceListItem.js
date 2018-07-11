@@ -11,12 +11,13 @@ class PlaceListItem extends React.Component {
 
     render() {
         return (
-            <div>
-                <h3 className="list-item__data"
-                onClick={this.clickEventHandler}
-            >{this.props.place.title}</h3>
-            <button onClick={this.removePlace}>Remove</button>
-    </div>
+            <div className='list-item'>
+                <div onClick={this.clickEventHandler} className="list-item-data">
+                    <h3 className="list-item-data__title"
+                    >{this.props.place.title}</h3>
+                </div>
+                <button onClick={this.removePlace} className='button button--remove'>REMOVE</button>
+            </div>
         )
     }
 }

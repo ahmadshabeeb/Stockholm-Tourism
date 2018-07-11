@@ -8,11 +8,11 @@ import selectPlaces from '../selectors/places';
 class PlacesList extends React.Component {
     render() {
         return(
-            <div className='list'>
+            <div className='list-group'>
             {
                 this.props.places.length === 0 ? (
-                    <div>
-                        <span>No Places Found</span>
+                    <div className='list-item--message'>
+                        <span>No Results</span>
                     </div>
                 ) : (
                         this.props.places.map ( (place) => 

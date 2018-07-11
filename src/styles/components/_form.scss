@@ -1,12 +1,23 @@
 .form {
   display: flex;
-  flex-direction: column;
-  >* {
-    margin-bottom: $m-size;
-  }
+  justify-content: row;
+}
+
+.form__text-input {
+  border: 1px solid #cacccd;
+  height: 4rem;
+  font-size: $font-size-large;
+  font-weight: 300;
+  padding: $s-size;
+  display: block;
+  margin: 2rem auto;
+  border-radius: 1px;
+  outline-width: 0;
+  width: 75%;
 }
 
 .form__error {
   margin: 0 0 $m-size 0;
   font-style: italic;
 }
+
