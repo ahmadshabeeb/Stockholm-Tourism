@@ -25,8 +25,8 @@ class Map extends React.Component {
     }
 
     if(prevProps.activePlace !== this.props.activePlace) {
-      this.zoomInForActivePlace(this.props.activePlace);
-      this.showInfoWindowForActivePlace(this.props.activePlace);
+      this.zoomInForActivePlace(this.props.activePlace.place);
+      this.showInfoWindowForActivePlace(this.props.activePlace.place);
     }
   }
 
