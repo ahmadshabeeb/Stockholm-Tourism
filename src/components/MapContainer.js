@@ -6,19 +6,12 @@ import LoadingPage from './LoadingPage';
 const googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY;
 
 export class MapContainer extends React.Component {
-
-  onMarkerClicked = (e) => {
-    this.setState({
-      showingInfoWindow: true
-    })
-  }
-
   render() {
     if (!this.props.loaded) {
       return <LoadingPage />
     }
     return (
-      <div className='map-container'>
+      <div>
           <Map google={this.props.google} />
       </div>
     )

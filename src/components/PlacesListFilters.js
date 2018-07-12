@@ -10,12 +10,12 @@ class PlacesListFilters extends React.Component {
     render() {
         return(
             <div>
-            <input className="text-input"
-                placeholder="search places"
-                type="text" 
-                defaultValue={this.props.filters.text} 
-                onChange={this.onTextChange}
-        />
+                <input className="text-input"
+                    placeholder="search places"
+                    type="text" 
+                    defaultValue={this.props.filters.text} 
+                    onChange={this.onTextChange}
+                />
             </div>
         );
     }

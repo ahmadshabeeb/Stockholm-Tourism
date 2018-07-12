@@ -43,14 +43,14 @@ class Map extends React.Component {
 }
 
 renderMap = () => {
-  const {google} = this.props;
+  const { google } = this.props;
   const maps = google.maps;
 
   const mapRef = this.refs.map;
   const node = ReactDOM.findDOMNode(mapRef);
 
-  const {initialCenter, zoom} = this.props;
-  const {lat, lng} = initialCenter;
+  const { initialCenter, zoom } = this.props;
+  const { lat, lng } = initialCenter;
   const center = new maps.LatLng(lat, lng);
 
   const mapConfig = Object.assign({}, {
@@ -63,27 +63,26 @@ renderMap = () => {
 renderMarkersOnMap = () => {
   this.clearMarkers();
   let markers = [];
-    this.props.places.map((place) => {
 
-      const marker = new google.maps.Marker({
-        position: place.position,
-        map: this.map,
-        title: place.title
-      });
+  this.props.places.map((place) => {
+    const marker = new google.maps.Marker({
+      position: place.position,
+      map: this.map,
+      title: place.title
+    });
 
-      markers.push(marker);
+    markers.push(marker);
 
-      const markerInfowindow = this.createMarkerInfoWindow(place.title);
+    const markerInfowindow = this.createMarkerInfoWindow(place.title);
 
-      marker.addListener('click', () => {
-        this.closeOpenedInfoWindow();
-        this.setState({
-          activeMarkerInfowindow: markerInfowindow
-        })
-        markerInfowindow.open(this.map, marker);
-      });
-  });
-
+    marker.addListener('click', () => {
+      this.closeOpenedInfoWindow();
+      this.setState({
+        activeMarkerInfowindow: markerInfowindow
+      })
+      markerInfowindow.open(this.map, marker);
+    });
+});
   this.setState({ markers });
 }
 
@@ -99,7 +98,7 @@ onMapClicked = () => {
         e.preventDefault();
         this.props.startAddPlace({
           position,
-          title: e.target.elements.location.value
+          title: e.target.elements.title.value
         });
         this.closeOpenedInfoWindow();
         this.renderMarkersOnMap();
