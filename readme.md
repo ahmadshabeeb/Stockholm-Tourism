@@ -1,6 +1,6 @@
 # Stockholm Tourism
 
-A web application displays a map, where users can add their own named places. All saved places are shown in a filterable list. [Deployed version](https://stockholm-tourism.herokuapp.com)
+A web application displays a map, where users can add their own named places. All saved places are shown in a filterable list.
 
 ## Getting Started
 
